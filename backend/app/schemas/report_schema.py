@@ -10,6 +10,7 @@ class CreateReportSchema(Schema):
     latitude = fields.Float(required=True, validate=validate.Range(min=-90, max=90))
     longitude = fields.Float(required=True, validate=validate.Range(min=-180, max=180))
     address = fields.Str(required=False, allow_none=True, validate=validate.Length(max=255))
+    media = fields.List(fields.Dict(), required=False, load_default=[])
 
 
 class UpdateReportSchema(Schema):
@@ -32,6 +33,6 @@ class ReportQuerySchema(Schema):
     """Schema for querying reports"""
     status = fields.Str(required=False, validate=validate.OneOf(ReportStatus.all()))
     incident_type = fields.Str(required=False, validate=validate.OneOf(IncidentType.all()))
-    page = fields.Int(required=False, validate=validate.Range(min=1), missing=1)
-    per_page = fields.Int(required=False, validate=validate.Range(min=1, max=100), missing=20)
+    page = fields.Int(required=False, validate=validate.Range(min=1), load_default=1)
+    per_page = fields.Int(required=False, validate=validate.Range(min=1, max=100), load_default=20)
     user_id = fields.Str(required=False)
