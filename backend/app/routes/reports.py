@@ -126,7 +126,7 @@ def create_report():
 @reports_bp.route('/<report_id>', methods=['PUT'])
 @login_required
 def update_report(report_id):
-    """Update an existing report (only by owner)"""
+    """Update an existing report (by owner or admin)"""
     try:
         # Validate request data
         schema = UpdateReportSchema()
@@ -138,9 +138,10 @@ def update_report(report_id):
         if not report:
             return jsonify({'error': 'Report not found'}), 404
         
-        # Check ownership
+        # Check ownership or admin
         user_id = get_jwt_identity()
-        if report.user_id != user_id:
+        user = User.query.get(user_id)
+        if report.user_id != user_id and not user.is_admin():
             return jsonify({'error': 'You can only edit your own reports'}), 403
         
         # Update fields
@@ -160,6 +161,35 @@ def update_report(report_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Failed to update report', 'message': str(e)}), 500
+
+
+@reports_bp.route('/stats/<user_id>', methods=['GET'])
+@login_required
+def get_user_stats(user_id):
+    """Get user report statistics"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        
+        # Users can only view their own stats, admins can view any stats
+        if user_id != current_user_id and not user.is_admin():
+            return jsonify({'error': 'Access denied'}), 403
+        
+        # Get report counts by status
+        total = Report.query.filter_by(user_id=user_id).count()
+        pending = Report.query.filter_by(user_id=user_id, status='pending').count()
+        resolved = Report.query.filter_by(user_id=user_id, status='resolved').count()
+        rejected = Report.query.filter_by(user_id=user_id, status='rejected').count()
+        
+        return jsonify({
+            'total': total,
+            'pending': pending,
+            'resolved': resolved,
+            'rejected': rejected
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': 'Failed to fetch stats', 'message': str(e)}), 500
 
 
 @reports_bp.route('/<report_id>', methods=['DELETE'])
