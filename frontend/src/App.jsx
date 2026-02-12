@@ -10,6 +10,8 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
 import ReportIncident from "./pages/ReportIncident.jsx";
 import IncidentDetail from "./pages/IncidentDetail.jsx";
+import EditIncident from "./pages/EditIncident.jsx";
+import Profile from "./pages/Profile.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 const queryClient = new QueryClient();
@@ -29,7 +31,8 @@ const UserOnlyRoute = ({ children }) => {
 };
 
 const DashboardRoute = () => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, loading } = useAuth();
+  if (loading) return <div>Loading...</div>;
   return isAdmin() ? <AdminDashboard /> : <UserDashboard />;
 };
 
@@ -44,8 +47,10 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardRoute /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/report" element={<UserOnlyRoute><ReportIncident /></UserOnlyRoute>} />
             <Route path="/incident/:id" element={<IncidentDetail />} />
+            <Route path="/incident/:id/edit" element={<ProtectedRoute><EditIncident /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
