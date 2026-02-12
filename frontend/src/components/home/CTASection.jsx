@@ -19,7 +19,6 @@ export function CTASection() {
 
             <h2 className="font-display text-3xl md:text-4xl font-bold text-secondary-foreground mb-4">
               Ready to Make a Difference?
-              Ready to Make a Difference ?
             </h2>
             <p className="text-lg text-secondary-foreground/80 max-w-xl mx-auto mb-8">
               Join thousands of citizens helping to keep their communities safe. 
