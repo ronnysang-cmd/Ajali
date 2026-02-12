@@ -62,11 +62,9 @@ class Report(db.Model):
             'title': self.title,
             'description': self.description,
             'incident_type': self.incident_type,
-            'location': {
-                'latitude': self.latitude,
-                'longitude': self.longitude,
-                'address': self.address
-            },
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'address': self.address,
             'status': self.status,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
